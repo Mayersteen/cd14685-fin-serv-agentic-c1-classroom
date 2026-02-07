@@ -19,7 +19,7 @@ from unittest.mock import Mock
 
 # Import source code directly from starter module
 from src.compliance_officer_agent import ComplianceOfficerAgent
-from src.foundation_sar import (
+from foundation_sar import (
     CustomerData, AccountData, TransactionData, CaseData,
     ComplianceOfficerOutput, RiskAnalystOutput, ExplainabilityLogger
 )

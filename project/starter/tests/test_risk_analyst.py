@@ -13,7 +13,7 @@ from datetime import datetime
 # Import risk analyst components - these will work once students implement them
 try:
     from src.risk_analyst_agent import RiskAnalystAgent
-    from src.foundation_sar import (
+    from foundation_sar import (
         RiskAnalystOutput,
         ExplainabilityLogger,
         CaseData,

@@ -27,13 +27,47 @@ YOUR TASKS:
 import json
 import pandas as pd
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any, Literal
-from pydantic import BaseModel, Field, field_validator
+from typing import Dict, List, Optional, Any, Literal, Annotated
+from pydantic import BaseModel, Field, SecretStr, field_validator, AfterValidator, BeforeValidator, model_validator
+import math
 import uuid
 import os
+from enum import Enum
+
+
+# ========================================================================================
+# Pydantic Validation Functions and Smart Types for cleaner code and less repetition
+# ========================================================================================
+def validate_date_format(v: str) -> str:
+    """Validator: Checks if string is YYYY-MM-DD"""
+    try:
+        datetime.strptime(v, '%Y-%m-%d')
+    except ValueError:
+        raise ValueError(f"Date must be in YYYY-MM-DD format: {v}")
+    return v
+
+def validate_float_precision(v: float) -> float:
+    """Validator: Checks if float has max 2 decimal places"""
+    shifted = v * 100
+    # Use 1e-9 for floating point tolerance
+    if not math.isclose(shifted, round(shifted), abs_tol=1e-9):
+        raise ValueError(f"Float has too many decimal places (max 2): [{v}]")
+    return v
+
+def validate_non_empty(v: str) -> str:
+    """Validator: Checks string is not empty or whitespace"""
+    if not v.strip():
+        raise ValueError("Field cannot be empty or whitespace only")
+    return v
+
+# Custom-ReUsable Types, that bind the function to the type
+ValidatedFloat = Annotated[float, AfterValidator(validate_float_precision)]
+IsoDateStr = Annotated[str, AfterValidator(validate_date_format)]
+NonEmptyStr = Annotated[str, AfterValidator(validate_non_empty)]
+
+# ========================================================================================
 
 # ===== TODO: IMPLEMENT PYDANTIC SCHEMAS =====
-
 class CustomerData(BaseModel):
     """Customer information schema with validation
     
@@ -55,8 +89,36 @@ class CustomerData(BaseModel):
     HINT: Use Field(None, description="...") for optional fields
     HINT: Use Literal type for risk_rating to restrict values
     """
-    # TODO: Implement the CustomerData schema with proper fields and validation
-    pass
+    # TODO: Complete the Pydantic models with validation logic [DONE]
+    # Required Fields
+    customer_id: NonEmptyStr = Field(..., description="Customer ID")
+    name: NonEmptyStr = Field(..., description="Full customer name")
+    date_of_birth: IsoDateStr = Field(..., description="Date of birth")
+    # name, date_of_birth, and address would also be PII, but the question focused only on the
+    # SSN (How will you handle the SSN field for privacy?), therefore I implemented special
+    # handling only for the SSN in the first version
+    ssn_last_4: SecretStr = Field(..., exclude=True, description="Last 4 SSN digits")
+    address: NonEmptyStr = Field(..., description="Address")
+    customer_since: IsoDateStr = Field(..., description="Customer Since Date")
+    risk_rating: Literal['Low', 'Medium', 'High'] = Field(..., description="Risk assessment")
+
+    # Optional Fields
+    phone: Optional[str] = Field(None, description="Phone number")
+    occupation: Optional[str] = Field(None, description="Job title")
+    annual_income: Optional[int] = Field(None, description="Yearly income")
+
+    # Ensure that ssn_last_4 consists of exactly 4 digits and no other characters.
+    @field_validator('ssn_last_4')
+    @classmethod
+    def ssn4_format_validator(cls, v: SecretStr) -> SecretStr:
+        ssn_value = v.get_secret_value()
+        if not len(ssn_value) == 4:
+            raise ValueError(f"ssn_last_4 must consist of four digits: {v}")
+        if not ssn_value.isdigit():
+            raise ValueError(f"ssn_last_4 can only include digits: {v}")
+        if ssn_value == "0000":
+            raise ValueError("SSN last 4 cannot be 0000")
+        return v
 
 class AccountData(BaseModel):
     """Account information schema with validation
@@ -75,7 +137,13 @@ class AccountData(BaseModel):
     HINT: current_balance can be negative for overdrafts
     """
     # TODO: Implement the AccountData schema
-    pass
+    account_id: NonEmptyStr = Field(..., description="Account ID")
+    customer_id: NonEmptyStr = Field(..., description="Customer ID")
+    account_type: Literal['Checking', 'Savings', 'Money_Market', 'Business_Checking'] = Field(..., description="Account type")
+    opening_date: IsoDateStr = Field(..., description="Date in YYYY-MM-DD format")
+    current_balance: ValidatedFloat = Field(..., description="Current balance", allow_inf_nan=False)
+    average_monthly_balance: ValidatedFloat = Field(..., description="Average balance", allow_inf_nan=False)
+    status: Literal['Active', 'Closed', 'Suspended'] = Field(..., description="Account status")
 
 class TransactionData(BaseModel):
     """Transaction information schema with validation
@@ -97,7 +165,15 @@ class TransactionData(BaseModel):
     HINT: Use descriptive field descriptions for clarity
     """
     # TODO: Implement the TransactionData schema
-    pass
+    transaction_id: NonEmptyStr = Field(..., description="Transaction ID")
+    account_id: NonEmptyStr = Field(..., description="Account ID")
+    transaction_date: IsoDateStr = Field(..., description="Transaction date")
+    transaction_type: NonEmptyStr = Field(..., description="Transaction type")
+    amount: ValidatedFloat = Field(..., description="Transaction amount")
+    description: NonEmptyStr = Field(..., description="Transaction description")
+    method: NonEmptyStr = Field(..., description="Transaction method")
+    counterparty: Optional[str] = Field(None, description="Counter party in transaction")
+    location: Optional[str] = Field(None, description="Transaction location or branch")
 
 class CaseData(BaseModel):
     """Unified case object combining all data sources
@@ -122,7 +198,36 @@ class CaseData(BaseModel):
     HINT: Check if not v: raise ValueError("message") for empty validation
     """
     # TODO: Implement the CaseData schema with validation
-    pass
+    case_id: NonEmptyStr = Field(..., description="Case ID")
+    customer: CustomerData = Field(..., description="Customer information")
+    accounts: List[AccountData] = Field(..., description="Accounts information")
+    transactions: List[TransactionData] = Field(..., min_length=1, description="Suspicious transactions")
+    case_created_at: NonEmptyStr = Field(..., description="ISO timestamp when case was created")
+    data_sources: Dict[str, str] = Field(..., description="Sources and source file")
+
+#    @model_validator(mode='after')
+#    def validate_referential_integrity(self) -> 'CaseData':
+#        # Ensures that:
+#        # 1. Acc accounts belong to the specified customer
+#        # 2. All txn belong to one of the specified
+#
+#        # 1. Verification of Account <-> Customer link
+#        for acc in self.accounts:
+#            if acc.customer_id != self.customer.customer_id:
+#                raise ValueError(
+#                    f"Integrity Error: Account {acc.account_id} belongs to {acc.customer_id}, "
+#                    f"but Case is for {self.customer.customer_id}"
+#                )
+#
+#        # 2. Verification of TXN <-> Account link
+#        valid_account_ids = {acc.account_id for acc in self.accounts}
+#        for txn in self.transactions:
+#            if txn.account_id not in valid_account_ids:
+#                raise ValueError(
+#                    f"Integrity Error: Transaction {txn.transaction_id} refers to "
+#                    f"account {txn.account_id} which is not present in this case."
+#                )
+#        return self
 
 class RiskAnalystOutput(BaseModel):
     """Risk Analyst agent structured output
@@ -139,7 +244,34 @@ class RiskAnalystOutput(BaseModel):
     HINT: Use Field(..., max_length=500) for reasoning length limit
     """
     # TODO: Implement the RiskAnalystOutput schema
-    pass
+    classification: Literal[
+        'Structuring',
+        'Sanctions',
+        'Fraud',
+        'Money_Laundering',
+        'Other'
+    ] = Field(..., description="Primary category of the suspicious activity")
+
+    confidence_score: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Confidence score between 0.0 and 1.0"
+    )
+
+    reasoning: NonEmptyStr = Field(
+        ...,
+        max_length=500,
+        description="Step-by-step analysis reasoning (max 500 chars)"
+    )
+
+    key_indicators: List[str] = Field(
+        ...,
+        min_length=1,
+        description="List of suspicious indicators"
+    )
+
+    risk_level: Literal['Low', 'Medium', 'High'] = Field(..., description="Risk assessment")
 
 class ComplianceOfficerOutput(BaseModel):
     """Compliance Officer agent structured output
@@ -158,7 +290,10 @@ class ComplianceOfficerOutput(BaseModel):
     HINT: Use bool type for completeness_check
     """
     # TODO: Implement the ComplianceOfficerOutput schema
-    pass
+    narrative: NonEmptyStr = Field(..., max_length=1000, description="Regulatory narrative (max 1000 chars)")
+    narrative_reasoning: NonEmptyStr = Field(..., max_length=500, description="Reasoning for narrative construction (max 500 chars)")
+    regulatory_citations: List[str] = Field(..., min_length=1, description="List of relevant regulations")
+    completeness_check: bool = Field(..., description="True if narrative meets all requirements")
 
 # ===== TODO: IMPLEMENT AUDIT LOGGING =====
 
@@ -193,7 +328,8 @@ class ExplainabilityLogger:
     
     def __init__(self, log_file: str = "sar_audit.jsonl"):
         # TODO: Initialize with log_file path and empty entries list
-        pass
+        self.log_file = log_file
+        self.entries = []
     
     def log_agent_action(self, agent_type: str, action: str, case_id: str, 
                         input_data: Dict, output_data: Dict, reasoning: str, 
@@ -211,7 +347,28 @@ class ExplainabilityLogger:
         HINT: Convert input_data and output_data to strings with str()
         """
         # TODO: Implement logging with structured entry creation and file writing
-        pass
+        entry = {
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'case_id': case_id,
+            'agent_type': agent_type,
+            'action': action,
+            'input_summary': str(input_data),
+            'output_summary': str(output_data),
+            'reasoning': reasoning,
+            'execution_time_ms': execution_time_ms,
+            'success': success,
+            'error_message': error_message
+        }
+
+        self.entries.append(entry)
+
+        # We use 'append' mode for writing to avoid the deletion of previous logs.
+        try:
+            with open(self.log_file, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(entry) + '\n')
+        except IOError as e:
+            # We will print the log to console if file access fails.
+            print(f"⚠️ Logger Error: Could not write to {self.log_file}: {e}")
 
 # ===== TODO: IMPLEMENT DATA LOADER =====
 
@@ -239,7 +396,7 @@ class DataLoader:
     
     def __init__(self, explainability_logger: ExplainabilityLogger):
         # TODO: Store logger for audit trail
-        pass
+        self.logger = explainability_logger
     
     def create_case_from_data(self, 
                             customer_data: Dict,
@@ -280,20 +437,104 @@ class DataLoader:
         HINT: Calculate execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
         """
         # TODO: Implement complete case creation with error handling and logging
-        pass
+        start_time = datetime.now(timezone.utc)
+        case_id = str(uuid.uuid4())
+
+        try:
+            customer = CustomerData(**customer_data)
+
+            customer_accounts = [
+                AccountData(**acc)
+                for acc in account_data
+                if acc['customer_id'] == customer.customer_id
+            ]
+
+            valid_account_ids = {acc.account_id for acc in customer_accounts}
+
+            customer_transactions = [
+                TransactionData(**txn)
+                for txn in transaction_data
+                if txn['account_id'] in valid_account_ids
+            ]
+
+            current_date_str = datetime.now().strftime('%Y%m%d')
+            data_sources = {
+                'customer_source': f"csv_extract_{current_date_str}",
+                'account_source': f"csv_extract_{current_date_str}",
+                'transaction_source': f"csv_extract_{current_date_str}"
+            }
+
+            case = CaseData(
+                case_id = case_id,
+                customer = customer,
+                accounts = customer_accounts,
+                transactions = customer_transactions,
+                case_created_at = datetime.now(timezone.utc).isoformat(),
+                data_sources = data_sources
+            )
+
+            end_time = datetime.now(timezone.utc)
+
+            execution_time_ms = (end_time - start_time).total_seconds() * 1000
+
+            self.logger.log_agent_action(
+                agent_type = "DataLoader",
+                action = "create_case",
+                case_id = case_id,
+                input_data = {"customer_id": customer.customer_id},
+                output_data = {"case_id" : case.case_id, "status": "created"},
+                reasoning = "Successfully aggregated customer, account and transaction data",
+                execution_time_ms = execution_time_ms,
+                success = True
+            )
+
+            return case
+
+        except Exception as e:
+            end_time = datetime.now(timezone.utc)
+            execution_time_ms = (end_time - start_time).total_seconds() * 1000
+
+            self.logger.log_agent_action(
+                agent_type = "DataLoader",
+                action = "create_case",
+                case_id = case_id,
+                input_data = customer_data,
+                output_data = {},
+                reasoning = f"Failed to create case: {str(e)}",
+                execution_time_ms = execution_time_ms,
+                success = False,
+                error_message = str(e)
+            )
+
+            raise e
 
 # ===== HELPER FUNCTIONS (PROVIDED) =====
 
 def load_csv_data(data_dir: str = "data/") -> tuple:
     """Helper function to load all CSV files
-    
+
     Returns:
         tuple: (customers_df, accounts_df, transactions_df)
     """
     try:
-        customers_df = pd.read_csv(f"{data_dir}/customers.csv")
-        accounts_df = pd.read_csv(f"{data_dir}/accounts.csv") 
-        transactions_df = pd.read_csv(f"{data_dir}/transactions.csv")
+
+        dtype_map = {
+            'ssn_last_4': str,
+            'customer_id': str,
+            'account_id': str,
+            'transaction_id': str
+        }
+
+        # Load CSVs with explicit types
+        customers_df = pd.read_csv(f"{data_dir}/customers.csv", dtype=dtype_map)
+        accounts_df = pd.read_csv(f"{data_dir}/accounts.csv", dtype=dtype_map)
+        transactions_df = pd.read_csv(f"{data_dir}/transactions.csv", dtype=dtype_map)
+
+        # Pydantic requires None for optional fields, it rejects NaN
+        customers_df = customers_df.where(pd.notnull(customers_df), None)
+        accounts_df = accounts_df.where(pd.notnull(accounts_df), None)
+        transactions_df = transactions_df.where(pd.notnull(transactions_df), None)
+
         return customers_df, accounts_df, transactions_df
     except FileNotFoundError as e:
         raise FileNotFoundError(f"CSV file not found: {e}")

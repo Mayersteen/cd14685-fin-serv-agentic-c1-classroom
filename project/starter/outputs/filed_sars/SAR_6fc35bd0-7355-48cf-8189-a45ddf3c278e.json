@@ -1,0 +1,45 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_6fc35bd0-7355-48cf-8189-a45ddf3c278e",
+    "filing_date": "2026-02-06T01:37:50.836168",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved"
+  },
+  "subject_information": {
+    "customer_name": "Cindy Clayton",
+    "customer_id": "CUST_0057",
+    "address": "08330 Robert Stravenue, Garciaberg, AL 72636",
+    "customer_since": "2020-05-26",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.85,
+    "narrative": "From February to August 2025, Cindy Clayton engaged in a high volume of transactions totaling over $200,000. Notably, towards the end of this period, she made several large cash transactions inconsistent with her previous behavior. These included a $5,500.55 cash deposit on July 31, 2025, and a $6,933.66 cash deposit on August 2, 2025. This activity appears to be structured to evade BSA reporting requirements.",
+    "key_indicators": [
+      "High volume of transactions",
+      "Large cash transactions",
+      "Inconsistent behavior"
+    ],
+    "ai_reasoning": "High volume of transactions with a pattern of large cash transactions towards the end of the log, inconsistent with previous behavior. Indicative of structuring to avoid BSA reporting requirements."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "31 CFR 1020.320",
+      "12 CFR 21.11"
+    ],
+    "narrative_word_count": 65,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "39008cc1-d395-48c4-afed-3d1232abb94a",
+    "processing_date": "2026-02-06T01:37:50.836168",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

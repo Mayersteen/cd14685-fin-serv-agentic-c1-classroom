@@ -62,7 +62,7 @@ cd project/starter
 pip install -r requirements.txt
 
 # Set up your Vocareum OpenAI API key
-cp .env.template .env
+cp .env .env
 # Edit .env and replace the placeholder with your actual Vocareum API key
 ```
 

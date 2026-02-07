@@ -1,0 +1,44 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_1bceae60-f786-443d-815f-8a942916252a",
+    "filing_date": "2026-02-07T14:13:08.174286",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved"
+  },
+  "subject_information": {
+    "customer_name": "Michael Stanley",
+    "customer_id": "CUST_0062",
+    "address": "230 Tiffany Mountain Suite 863, South Michael, KY 25205",
+    "customer_since": "2022-04-01",
+    "risk_rating": "Medium"
+  },
+  "suspicious_activity": {
+    "classification": "Money_Laundering",
+    "risk_level": "High",
+    "confidence_score": 0.85,
+    "narrative": "Between February and July 2025, Michael Stanley (ID: CUST_0062) conducted multiple transactions with varying amounts. Notably, from July 27-29, 2025, there were five large wire transfers totaling $169,272.24. This rapid movement of funds, especially the large outgoing wire transfers, is indicative of layering, a money laundering technique. The activity appears to be structured to evade reporting requirements.",
+    "key_indicators": [
+      "Rapid movement of funds",
+      "Large outgoing wire transfers",
+      "Medium risk rating"
+    ],
+    "ai_reasoning": "The customer has a medium risk rating and has made multiple large outgoing wire transfers in a short time frame. This rapid movement of funds is indicative of layering, a money laundering technique."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "31 CFR 1020.320"
+    ],
+    "narrative_word_count": 57,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "8c4fd40f-5f93-41d9-b4fb-250262290649",
+    "processing_date": "2026-02-07T14:13:08.174286",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_ff82ef89-16c2-4dce-acf0-fe47bb59ca09",
+    "filing_date": "2026-02-06T01:37:10.108008",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved"
+  },
+  "subject_information": {
+    "customer_name": "Jacqueline Rodriguez",
+    "customer_id": "CUST_0111",
+    "address": "49331 Lewis Views Apt. 516, Lake Maryshire, DE 59549",
+    "customer_since": "2022-02-27",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.9,
+    "narrative": "Between February and July 2025, Jacqueline Rodriguez (ID: CUST_0111) conducted numerous transactions, including four large wire transfers just below the $10,000 threshold on July 30 and 31, 2025. These transactions, totaling $49,527.51, appear to be structured to avoid reporting requirements. Given the customer's high-risk status and the nature of these transactions, they warrant further investigation.",
+    "key_indicators": [
+      "High-risk customer",
+      "Large wire transfers",
+      "Transactions just below $10,000"
+    ],
+    "ai_reasoning": "The customer has a high-risk rating and has shown suspicious behavior with large wire transfers. The last four transactions are just below the $10,000 threshold, which indicates potential structuring to avoid reporting requirements."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "31 CFR 1020.320"
+    ],
+    "narrative_word_count": 55,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "ebb424d6-74f5-4c80-b52c-acfa8c8cee93",
+    "processing_date": "2026-02-06T01:37:10.108008",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_80589662-868f-426f-bdb8-05c1e68f77c6",
+    "filing_date": "2026-02-06T10:27:41.413137",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved"
+  },
+  "subject_information": {
+    "customer_name": "Jacqueline Rodriguez",
+    "customer_id": "CUST_0111",
+    "address": "49331 Lewis Views Apt. 516, Lake Maryshire, DE 59549",
+    "customer_since": "2022-02-27",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.85,
+    "narrative": "Between July 18 and July 31, 2025, Jacqueline Rodriguez (ID: CUST_0111) received a large incoming wire transfer of $76,517.25. This was followed by multiple outgoing transfers below $10,000, totaling $49,517.51. The activity appears structured to evade BSA reporting requirements.",
+    "key_indicators": [
+      "High risk rating",
+      "Large incoming wire transfer",
+      "Multiple outgoing transfers below $10,000"
+    ],
+    "ai_reasoning": "The customer has a high-risk rating. The transactions show a sudden large incoming wire transfer of $76,517.25, followed by multiple outgoing transfers just below $10,000, indicating possible structuring to avoid reporting requirements."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "31 CFR 1020.320",
+      "12 CFR 21.11"
+    ],
+    "narrative_word_count": 39,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "23807b1d-8544-4b7f-bb23-d05c6eb6e200",
+    "processing_date": "2026-02-06T10:27:41.413137",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}
