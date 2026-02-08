@@ -100,7 +100,7 @@ class CustomerData(BaseModel):
     ssn_last_4: SecretStr = Field(..., exclude=True, description="Last 4 SSN digits")
     address: NonEmptyStr = Field(..., description="Address")
     customer_since: IsoDateStr = Field(..., description="Customer Since Date")
-    risk_rating: Literal['Low', 'Medium', 'High'] = Field(..., description="Risk assessment")
+    risk_rating: Literal['Low', 'Medium', 'High', 'Critical'] = Field(..., description="Risk assessment")
 
     # Optional Fields
     phone: Optional[str] = Field(None, description="Phone number")
@@ -346,8 +346,12 @@ class ExplainabilityLogger:
         HINT: Use datetime.now(timezone.utc).isoformat() for timestamp
         HINT: Convert input_data and output_data to strings with str()
         """
+
+        log_id = str(uuid.uuid4())
+
         # TODO: Implement logging with structured entry creation and file writing
         entry = {
+            'log_id': log_id,
             'timestamp': datetime.now(timezone.utc).isoformat(),
             'case_id': case_id,
             'agent_type': agent_type,
@@ -530,12 +534,13 @@ def load_csv_data(data_dir: str = "data/") -> tuple:
         accounts_df = pd.read_csv(f"{data_dir}/accounts.csv", dtype=dtype_map)
         transactions_df = pd.read_csv(f"{data_dir}/transactions.csv", dtype=dtype_map)
 
-        # Pydantic requires None for optional fields, it rejects NaN
-        customers_df = customers_df.where(pd.notnull(customers_df), None)
-        accounts_df = accounts_df.where(pd.notnull(accounts_df), None)
-        transactions_df = transactions_df.where(pd.notnull(transactions_df), None)
+         # Pydantic requires None for optional fields, it rejects NaN
+        customers_df = customers_df.replace({float('nan'): None})
+        accounts_df = accounts_df.replace({float('nan'): None})
+        transactions_df = transactions_df.replace({float('nan'): None})
 
         return customers_df, accounts_df, transactions_df
+
     except FileNotFoundError as e:
         raise FileNotFoundError(f"CSV file not found: {e}")
     except Exception as e:
