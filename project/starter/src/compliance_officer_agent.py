@@ -44,9 +44,9 @@ from unittest.mock import MagicMock
 
 # Use the direct import since 'src' is now in your sys.path
 try:
-    from foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData, ComplianceOfficerOutput
+    from foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData, ComplianceOfficerOutput, TransactionData, CustomerData
 except ImportError:
-    from src.foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData, ComplianceOfficerOutput
+    from src.foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData, ComplianceOfficerOutput, TransactionData, CustomerData
 
 # Load environment variables
 load_dotenv()
@@ -105,9 +105,10 @@ class ComplianceOfficerAgent:
             - START with the date range and total suspicious amount.
             - BODY should detail the specific patterns (e.g., "Customer made 4 cash deposits...").
             - CONCLUSION should state the suspicion (e.g., "Activity appears structured to evade reporting requirements").
-            - TONE: Objective, dry, professional, and strictly factual. Use regulatory language.
+            - TONE: Strictly factual and objective. State the facts and the specific basis for suspicion (e.g., "pattern is consistent with..."). 
+            - DO NOT make recommendations or conclusions (e.g., NEVER say "warrant further investigation" or "recommend review").
             - LENGTH: Maximum 120 words.
-            - EXCLUDE: Personal opinions or flowery language.
+            - EXCLUDE: Personal opinions, flowery language, and investigative recommendations.
 
             # OUTPUT FORMAT
             You must respond with a VALID JSON object matching this structure exactly:
@@ -172,8 +173,15 @@ class ComplianceOfficerAgent:
             result_dict = json.loads(json_str)
 
             narrative_text = result_dict.get("narrative", "")
+            citations_list = result_dict.get("regulatory_ciutationss", [])
+            customer_name_val = case_data.customer.name
 
-            validation = self._validate_narrative_compliance(narrative_text)
+            validation = self._validate_narrative_compliance(
+                narrative_text = narrative_text,
+                citations = citations_list,
+                customer_name = customer_name_val
+            )
+
             if not validation["valid"]:
                 # The test expects specific text "exceeds 120 word limit"
                 error_msg = f"Narrative validation failed. Narrative exceeds 120 word limit. Errors: {validation['errors']}"
@@ -287,7 +295,7 @@ class ComplianceOfficerAgent:
             
         """
 
-    def _validate_narrative_compliance(self, narrative: str) -> Dict[str, Any]:
+    def _validate_narrative_compliance(self, narrative: str, citations: List[str], customer_name: str) -> Dict[str, Any]:
         """Validate narrative meets regulatory requirements
         
         TODO: Implement validation that checks:
@@ -306,6 +314,18 @@ class ComplianceOfficerAgent:
         # Terminology check
         if " I " in narrative or " we " in narrative.lower():
             errors.append("Narrative uses first-person language (I/we) instead of objective tone")
+
+        # The narrative MUST mention the subject by name.
+        if customer_name not in narrative:
+            errors.append(f"Narrative missing subject identity: '{customer_name}'")
+
+        # SARs must include specific dollar amounts.
+        if "$" not in narrative:
+            errors.append("Narrative missing specific monetary amounts ($ symbol)")
+
+        # We must have at least one citation.
+        if not citations or len(citations) == 0:
+            errors.append("Regulatory citations list is empty")
 
         return {
             "valid": len(errors) == 0,
