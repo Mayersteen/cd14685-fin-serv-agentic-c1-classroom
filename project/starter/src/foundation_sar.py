@@ -28,7 +28,7 @@ import json
 import pandas as pd
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any, Literal, Annotated
-from pydantic import BaseModel, Field, SecretStr, field_validator, AfterValidator, BeforeValidator, model_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator, AfterValidator, BeforeValidator, model_validator, ValidationError
 import math
 import uuid
 import os
@@ -440,26 +440,43 @@ class DataLoader:
         HINT: Use datetime.now(timezone.utc).isoformat() for timestamps
         HINT: Calculate execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
         """
-        # TODO: Implement complete case creation with error handling and logging
+
         start_time = datetime.now(timezone.utc)
         case_id = str(uuid.uuid4())
 
         try:
-            customer = CustomerData(**customer_data)
 
-            customer_accounts = [
-                AccountData(**acc)
-                for acc in account_data
-                if acc['customer_id'] == customer.customer_id
-            ]
+            # Improved customer data import
+            try:
+                customer = CustomerData(**customer_data)
+            except ValidationError as e:
+                raise ValueError(f"Customer Data Error (ID: {customer_data.get('customer_id')}): {e}")
+
+            # Improved account data import
+            customer_accounts = []
+            raw_customer_accounts = [acc for acc in account_data if acc['customer_id'] == customer.customer_id]
+
+            for acc_dict in raw_customer_accounts:
+                try:
+                    customer_accounts.append(AccountData(**acc_dict))
+                except ValidationError as e:
+                    acc_id = acc_dict.get('account_id', 'Unknown')
+                    raise ValueError(f"Account Data Error (Account ID: {acc_id}): {e}")
 
             valid_account_ids = {acc.account_id for acc in customer_accounts}
 
-            customer_transactions = [
-                TransactionData(**txn)
-                for txn in transaction_data
-                if txn['account_id'] in valid_account_ids
-            ]
+            # Improved transactions import
+            customer_transactions = []
+            raw_customer_transactions = [txn for txn in transaction_data if txn['account_id'] in valid_account_ids]
+
+            for txn_dict in raw_customer_transactions:
+                try:
+                    customer_transactions.append(TransactionData(**txn_dict))
+                except ValidationError as e:
+                    # FIX 1: Identify exactly which transaction failed
+                    txn_id = txn_dict.get('transaction_id', 'Unknown')
+                    raise ValueError(f"Transaction Data Error (Txn ID: {txn_id}): {e}")
+
 
             current_date_str = datetime.now().strftime('%Y%m%d')
             data_sources = {
@@ -478,8 +495,13 @@ class DataLoader:
             )
 
             end_time = datetime.now(timezone.utc)
-
             execution_time_ms = (end_time - start_time).total_seconds() * 1000
+
+            reasoning_msg = (
+                f"Successfully built case for Customer {customer.customer_id}. "
+                f"Aggregated {len(customer_accounts)} accounts and "
+                f"{len(customer_transactions)} transactions."
+            )
 
             self.logger.log_agent_action(
                 agent_type = "DataLoader",
@@ -487,7 +509,7 @@ class DataLoader:
                 case_id = case_id,
                 input_data = {"customer_id": customer.customer_id},
                 output_data = {"case_id" : case.case_id, "status": "created"},
-                reasoning = "Successfully aggregated customer, account and transaction data",
+                reasoning = reasoning_msg,
                 execution_time_ms = execution_time_ms,
                 success = True
             )
@@ -504,7 +526,7 @@ class DataLoader:
                 case_id = case_id,
                 input_data = customer_data,
                 output_data = {},
-                reasoning = f"Failed to create case: {str(e)}",
+                reasoning = f"Failed to create case due to data integrity issue.",
                 execution_time_ms = execution_time_ms,
                 success = False,
                 error_message = str(e)
@@ -538,6 +560,14 @@ def load_csv_data(data_dir: str = "data/") -> tuple:
         customers_df = customers_df.replace({float('nan'): None})
         accounts_df = accounts_df.replace({float('nan'): None})
         transactions_df = transactions_df.replace({float('nan'): None})
+
+        # Added whitespace handling
+        def strip_strings(x):
+            return x.strip() if isinstance(x, str) else x
+
+        customers_df = customers_df.map(strip_strings)
+        accounts_df = accounts_df.map(strip_strings)
+        transactions_df = transactions_df.map(strip_strings)
 
         return customers_df, accounts_df, transactions_df
 
