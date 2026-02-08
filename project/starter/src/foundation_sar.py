@@ -181,6 +181,23 @@ class TransactionData(BaseModel):
     counterparty: Optional[str] = Field(None, description="Counter party in transaction")
     location: Optional[str] = Field(None, description="Transaction location or branch")
 
+    @field_validator('transaction_date')
+    @classmethod
+    def validate_past_date(cls, v: str) -> str:
+        try:
+            # Parse the YYYY-MM-DD string
+            txn_date = datetime.strptime(v, '%Y-%m-%d').date()
+            current_date = datetime.now(timezone.utc).date()
+
+            if txn_date > current_date:
+                raise ValueError(f"Transaction date cannot be in the future: {v}")
+        except ValueError as e:
+            # Re-raise parsing errors if they occur (though IsoDateStr handles format)
+            if "format" in str(e): raise e
+            raise ValueError(f"Date validation error: {e}")
+
+        return v
+
 class CaseData(BaseModel):
     """Unified case object combining all data sources
     
