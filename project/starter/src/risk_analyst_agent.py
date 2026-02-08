@@ -93,7 +93,7 @@ class RiskAnalystAgent:
           "confidence_score": 0.0,
           "reasoning": "Step-by-step analysis summary (max 500 chars)",
           "key_indicators": ["list", "of", "specific", "flags"],
-              "risk_level": "Literal['Low', 'Medium', 'High']"
+              "risk_level": "Literal['Low', 'Medium', 'High', 'Critical']"
             }
 
             CRITICAL RULES:
@@ -135,14 +135,12 @@ class RiskAnalystAgent:
                 print(f"   Raw Response: {response}")
                 raise ValueError("OpenAI API returned an empty response (choices=None)")
 
-            try:
-                raw_content = response.choices[0].message.content
-                json_str = self._extract_json_from_response(raw_content)
-                result_json = json.loads(json_str)
-                analysis_result = RiskAnalystOutput(**result_json)
 
-            except Exception as e:
-                raise ValueError(f"Failed to parse Risk Analyst JSON output: {e}")
+            raw_content = response.choices[0].message.content
+            json_str = self._extract_json_from_response(raw_content)
+            result_json = json.loads(json_str)
+
+            analysis_result = RiskAnalystOutput(**result_json)
 
             execution_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
 
@@ -163,21 +161,30 @@ class RiskAnalystAgent:
         except Exception as e:
 
             execution_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
-            error_message = f"JSON parsing failed: {str(e)}"
+            error_msg = f"INTERNAL ERROR: Analysis failed. Manual review required. Details: {str(e)}"
+
+            fallback_result = RiskAnalystOutput(
+                classification="Other",
+                confidence_score=0.0,
+                reasoning=error_msg,
+                key_indicators=["System Error", "Parsing Failure", "Manual Review Needed"],
+                risk_level="High"
+            )
+
             if self.logger:
                 self.logger.log_agent_action(
                     agent_type = "RiskAnalyst",
-                    action = "analyze_case",
+                    action="analyze_case_fallback",
                     case_id = getattr(case_data, 'case_id', 'UNKNOWN'),
-                    input_data = {"error_context": "Analysis failed"},
-                    output_data = {},
-                    reasoning = error_message,
+                    input_data={"error_context": "Graceful Recovery Triggered"},
+                    output_data=fallback_result.model_dump(),
+                    reasoning = error_msg,
                     execution_time_ms = execution_time,
                     success = False,
                     error_message = str(e)
                 )
 
-            raise e
+            return fallback_result
 
     def _extract_json_from_response(self, response_content: str) -> str:
         """Extract JSON content from LLM response
