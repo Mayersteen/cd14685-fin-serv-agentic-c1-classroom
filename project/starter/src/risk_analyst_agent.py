@@ -136,7 +136,6 @@ class RiskAnalystAgent:
                 print(f"   Raw Response: {response}")
                 raise ValueError("OpenAI API returned an empty response (choices=None)")
 
-
             raw_content = response.choices[0].message.content
             json_str = self._extract_json_from_response(raw_content)
             result_json = json.loads(json_str)
