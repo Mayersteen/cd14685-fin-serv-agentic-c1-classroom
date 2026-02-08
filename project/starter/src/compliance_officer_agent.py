@@ -173,11 +173,11 @@ class ComplianceOfficerAgent:
             result_dict = json.loads(json_str)
 
             narrative_text = result_dict.get("narrative", "")
-            citations_list = result_dict.get("regulatory_ciutationss", [])
+            citations_list = result_dict.get("regulatory_citations", [])
             customer_name_val = case_data.customer.name
 
             validation = self._validate_narrative_compliance(
-                narrative_text = narrative_text,
+                narrative = narrative_text,
                 citations = citations_list,
                 customer_name = customer_name_val
             )
