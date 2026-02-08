@@ -146,3 +146,54 @@ collecting ... collected 10 items
 🎉 Your system is ready for production workflow testing!
 📝 Proceed to run the complete system demonstration.
 ```
+
+## Cell 2
+As I have no more credits, I had to implement Mock services and responses, to ensure that I don't get stuck by OpenAI
+API errors (no more credits), etc.
+
+The variable/constant `SELECT_TOP_N_CUSTOMERS` defines how many top_n customers are processed.
+
+```
+🎯 End-to-End Workflow Testing (Hybrid Mode)
+ℹ️  Configuration: Real CSV Data + Mock AI Agents
+🚀 Starting end-to-end workflow test...
+📂 Loading Real Data from: C:\Users\mayer\PycharmProjects\cd14685-fin-serv-agentic-c1-classroom\project\starter\data
+   📊 Loaded 150 customers, 178 accounts, 4268 transactions.
+🔍 Screening customers from real data...
+✅ Selected 6 customers for processing
+
+▶️  Processing Customer 1: Tanya Johnston
+   ✅ Case Created: 872c9845-52b6-493e-b9a5-039969a67045
+📄 Creating SAR Document
+   ✅ SAR Generated: SAR_b90e5687-88d8-4ccb-8c1b-f3a5df365cfd
+
+▶️  Processing Customer 2: Lucas Allen
+   ✅ Case Created: 211335dd-422c-45ef-b6d7-bb006539ea74
+📄 Creating SAR Document
+   ✅ SAR Generated: SAR_4ef82c41-5477-44f5-be68-0ae89a5ee39e
+
+▶️  Processing Customer 3: Cindy Clayton
+   ✅ Case Created: 7f93385f-3cf7-4eb0-8ab6-912506dadacb
+📄 Creating SAR Document
+   ✅ SAR Generated: SAR_476f6866-1ea1-422f-a149-0217b846bee5
+
+▶️  Processing Customer 4: Melissa Miller
+   ✅ Case Created: 5b832ab5-b90d-489d-afad-e10f94d15aeb
+📄 Creating SAR Document
+   ✅ SAR Generated: SAR_b5e854d2-994d-4025-a00c-d59c88aaf091
+
+▶️  Processing Customer 5: Elijah Patton
+   ✅ Case Created: d5d23446-f9a1-4768-a68a-5aaaebf06bd0
+📄 Creating SAR Document
+   ✅ SAR Generated: SAR_98180f71-2ca1-4f63-8cfd-244493cc1678
+
+▶️  Processing Customer 6: Clayton Steele
+   ✅ Case Created: 2db94ca2-5e14-4e16-aa87-5d6c91b41cfe
+📄 Creating SAR Document
+   ✅ SAR Generated: SAR_c46b8c3e-bc77-4a2a-a594-7b05f0ce60ce
+
+📊 HYBRID TEST RESULTS:
+   Cases Processed: 6
+   SARs Generated: 6
+   Errors: 0
+```
