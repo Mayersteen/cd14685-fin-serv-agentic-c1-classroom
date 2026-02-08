@@ -61,9 +61,15 @@ def validate_non_empty(v: str) -> str:
     return v
 
 # Custom-ReUsable Types, that bind the function to the type
-ValidatedFloat = Annotated[float, AfterValidator(validate_float_precision)]
 IsoDateStr = Annotated[str, AfterValidator(validate_date_format)]
 NonEmptyStr = Annotated[str, AfterValidator(validate_non_empty)]
+
+MAX_MONETARY_VALUE = 100_000_000_000.0
+ValidatedFloat = Annotated[
+    float,
+    Field(ge=-MAX_MONETARY_VALUE, le=MAX_MONETARY_VALUE),
+    AfterValidator(validate_float_precision)
+]
 
 # ========================================================================================
 
