@@ -70,12 +70,12 @@ class RiskAnalystAgent:
 
         You must output a VALID JSON object matching this schema exactly:
         {
-          "classification": "Literal['Structuring', 'Sanctions', 'Fraud', 'Money_Laundering', 'Other']",
-          "confidence_score": 0.0,
-          "reasoning": "Step-by-step analysis summary (max 500 chars)",
-          "key_indicators": ["list", "of", "specific", "flags"],
-              "risk_level": "Literal['Low', 'Medium', 'High', 'Critical']"
-            }
+            "classification": "Literal['Structuring', 'Sanctions', 'Fraud', 'Money_Laundering', 'Other']",
+            "confidence_score": 0.0,
+            "reasoning": "Step-by-step analysis summary (max 500 chars)",
+            "key_indicators": ["list", "of", "specific", "flags"],
+            "risk_level": "Literal['Low', 'Medium', 'High', 'Critical']"
+        }
 
             CRITICAL RULES:
             - If you see transactions just below $10,000, verify if it is Structuring.
