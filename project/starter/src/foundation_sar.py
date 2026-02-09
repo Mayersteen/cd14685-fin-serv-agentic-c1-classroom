@@ -357,7 +357,7 @@ class ExplainabilityLogger:
     def log_agent_action(self, agent_type: str, action: str, case_id: str, 
                         input_data: Dict, output_data: Dict, reasoning: str, 
                         execution_time_ms: float, success: bool = True, 
-                        error_message: Optional[str] = None):
+                        error_message: Optional[str] = None) -> str:
         """Log an agent action with essential context
         
         IMPLEMENTATION STEPS:
@@ -372,7 +372,6 @@ class ExplainabilityLogger:
 
         log_id = str(uuid.uuid4())
 
-        # TODO: Implement logging with structured entry creation and file writing
         entry = {
             'log_id': log_id,
             'timestamp': datetime.now(timezone.utc).isoformat(),
@@ -397,7 +396,7 @@ class ExplainabilityLogger:
             # We will print the log to console if file access fails.
             print(f"⚠️ Logger Error: Could not write to {self.log_file}: {e}")
 
-# ===== TODO: IMPLEMENT DATA LOADER =====
+        return log_id
 
 class DataLoader:
     """Simple loader that creates case objects from CSV data
