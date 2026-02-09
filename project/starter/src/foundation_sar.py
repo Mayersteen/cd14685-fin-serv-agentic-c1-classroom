@@ -294,7 +294,7 @@ class RiskAnalystOutput(BaseModel):
         description="List of suspicious indicators"
     )
 
-    risk_level: Literal['Low', 'Medium', 'High'] = Field(..., description="Risk assessment")
+    risk_level: Literal['Low', 'Medium', 'High', 'Critical'] = Field(..., description="Risk assessment")
 
 class ComplianceOfficerOutput(BaseModel):
     """Compliance Officer agent structured output

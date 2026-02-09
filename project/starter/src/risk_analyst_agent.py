@@ -23,26 +23,6 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 import os
 
-# TODO: Import your foundation components
-#from foundation_sar import (
-#    RiskAnalystOutput,
-#    ExplainabilityLogger,
-#    CaseData
-#)
-
-# # Handle imports for both Notebook execution and Pytest runner
-# try:
-#     # 1. Try relative import (Standard for Python packages/Pytest)
-#     from .foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData
-# except ImportError:
-#     try:
-#         # 2. Try explicit package import (Sometimes needed by Pytest from root)
-#         from src.foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData
-#     except ImportError:
-#         # 3. Fallback for Jupyter Notebooks (When running directly inside src/)
-#         from foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData
-
-# Use the direct import since 'src' is now in your sys.path
 try:
     from foundation_sar import RiskAnalystOutput, ExplainabilityLogger, CaseData, ComplianceOfficerOutput
 except ImportError:
@@ -55,7 +35,7 @@ class RiskAnalystAgent:
     """
     Risk Analyst agent using Chain-of-Thought reasoning.
     
-    TODO: Implement agent that:
+    Implement agent that:
     - Uses systematic Chain-of-Thought prompting
     - Classifies suspicious activity patterns
     - Returns structured JSON output
