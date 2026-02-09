@@ -559,6 +559,18 @@ class DataLoader:
 
 # ===== HELPER FUNCTIONS (PROVIDED) =====
 
+def _clean_and_prepare_records(df: pd.DataFrame) -> pd.DataFrame:
+    context = "DataCleaning"
+    df_cleaned = df.astype(object).where(pd.notnull(df), None)
+
+    for col in df_cleaned.columns:
+        has_nan = df_cleaned[col].apply(lambda x: isinstance(x, float) and math.isnan(x)).any()
+        if has_nan:
+            error_msg = f"[{context}] Critical Error: Column '{col}' still contains float NaNs."
+            raise ValueError(error_msg)
+
+    return df_cleaned
+
 def load_csv_data(data_dir: str = "data/") -> tuple:
     """Helper function to load all CSV files
 
@@ -579,12 +591,10 @@ def load_csv_data(data_dir: str = "data/") -> tuple:
         accounts_df = pd.read_csv(f"{data_dir}/accounts.csv", dtype=dtype_map)
         transactions_df = pd.read_csv(f"{data_dir}/transactions.csv", dtype=dtype_map)
 
-         # Pydantic requires None for optional fields, it rejects NaN
-        customers_df = customers_df.replace({float('nan'): None})
-        accounts_df = accounts_df.replace({float('nan'): None})
-        transactions_df = transactions_df.replace({float('nan'): None})
+        customers_df = _clean_and_prepare_records(customers_df)
+        accounts_df = _clean_and_prepare_records(accounts_df)
+        transactions_df = _clean_and_prepare_records(transactions_df)
 
-        # Added whitespace handling
         def strip_strings(x):
             return x.strip() if isinstance(x, str) else x
 
