@@ -364,7 +364,7 @@ class ComplianceOfficerAgent:
             errors.append("Narrative missing specific monetary amounts (e.g., '$9,000', '9000 USD')")
 
         # WHEN
-         date_pattern = (
+        date_pattern = (
             r'\b('  # Start word boundary and group
             r'(?:19|20)\d{2}|'  # Years: 19xx or 20xx
             r'(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*|'  # Months (short or long)
