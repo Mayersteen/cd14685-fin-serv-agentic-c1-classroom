@@ -218,34 +218,40 @@ class ComplianceOfficerAgent:
                     success=True
                 )
 
+            print("   ✅ Compliance Narrative Generated Successfully.")
             return compliance_narrative
 
         except Exception as e:
 
+            error_msg = str(e)
+            print(f"   ⚠️ Compliance Generation Failed: {error_msg}")
+            print("   🔄 Switching to Fallback Narrative (Manual Review Stub)...")
+
             if self.logger:
-
-                error_text = str(e).lower()
-                # Robustly catch JSON errors AND the "No JSON content found" error
-                if "json" in error_text or "parse" in error_text or "found" in error_text:
-                    log_reasoning = f"JSON parsing failed: {str(e)}"
-                else:
-                    log_reasoning = f"Error: {str(e)}"
-
                 self.logger.log_agent_action(
                     agent_type="ComplianceOfficer",
-                    action="generate_narrative",
+                    action="generate_narrative_fallback",
                     case_id=case_data.case_id,
                     input_data={"customer_id": case_data.customer.customer_id},
                     output_data=None,
-                    reasoning=log_reasoning,
+                    reasoning=f"Fallback triggered due to: {error_msg}",
                     execution_time_ms=(datetime.now(timezone.utc) - start_time).total_seconds() * 1000,
                     success=False
                 )
 
-            # We preserve "word limit" errors, but wrap parsing errors.
-            if "word limit" in str(e):
-                raise e
-            raise ValueError(f"Failed to parse Compliance Officer JSON output: {e}")
+            return self._generate_fallback_narrative(case_data, error_msg)
+
+    def _generate_fallback_narrative(self, case_data, error_reason: str) -> 'ComplianceOfficerOutput':
+        """
+        Creates a safe, placeholder ComplianceOfficerOutput when the Agent fails.
+        This ensures the pipeline continues to the next step (Human Review).
+        """
+        return ComplianceOfficerOutput(
+            narrative_reasoning=f"AUTOMATED GENERATION FAILED. Error: {error_reason}. Proceeding to manual review.",
+            regulatory_citations=["MANUAL_REVIEW_REQUIRED"],
+            narrative=f"System Error: Unable to generate SAR narrative for Customer {case_data.customer.name}. Manual Compliance Officer review is required.",
+            completeness_check=False
+        )
 
     def _format_transactions_for_compliance(self, transactions: List[TransactionData]) -> str:
         """Helper to format transactions list for the prompt"""
@@ -474,7 +480,6 @@ def test_narrative_generation():
         reasoning="Pattern of deposits just below reporting threshold.",
         key_indicators=["threshold avoidance", "cash deposits"]
     )
-
 
     print("   2. Initializing Agent with Mock Client...")
     # Create a mock that behaves like the OpenAI client
