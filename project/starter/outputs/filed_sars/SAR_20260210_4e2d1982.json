@@ -1,0 +1,48 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_20260210_4e2d1982",
+    "filing_date": "2026-02-10T18:34:09.876409",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved",
+    "audit_trail": {
+      "approval_log_id": "e0851155-e3c2-4ea4-925a-a3d06428ec2d",
+      "reviewer_id": "human_reviewer_01",
+      "risk_rating": "High"
+    }
+  },
+  "subject_information": {
+    "customer_name": "Clayton Steele",
+    "customer_id": "CUST_0076",
+    "address": "2782 Tracy Dam Apt. 579, Port Michaeltown, NM 18396",
+    "customer_since": "2016-04-29",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.98,
+    "narrative": "Hybrid Test: Customer data from CSV indicates structuring...",
+    "key_indicators": [
+      "Round amounts",
+      "High velocity"
+    ],
+    "ai_reasoning": "Hybrid Test: Real Data was analyzed and flagged."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "31 CFR 1020.320"
+    ],
+    "narrative_word_count": 8,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "4e2d1982-6e4c-4b36-a180-d7e5dfbb7b32",
+    "processing_date": "2026-02-10T18:34:09.876409",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_20260210_12d3f35a",
+    "filing_date": "2026-02-10T18:23:28.397435",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved",
+    "audit_trail": {
+      "approval_log_id": "9a9a50d1-99de-490d-87fa-abdbadb9caff",
+      "reviewer_id": "human_reviewer_01",
+      "risk_rating": "High"
+    }
+  },
+  "subject_information": {
+    "customer_name": "Jacqueline Rodriguez",
+    "customer_id": "CUST_0111",
+    "address": "49331 Lewis Views Apt. 516, Lake Maryshire, DE 59549",
+    "customer_since": "2022-02-27",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.92,
+    "narrative": "System Error: Unable to generate SAR narrative for Customer Jacqueline Rodriguez. Manual Compliance Officer review is required.",
+    "key_indicators": [
+      "Amounts just below threshold",
+      "High frequency",
+      "Cash deposits"
+    ],
+    "ai_reasoning": "Detected pattern of cash deposits just below $10,000 threshold ($9,800, $9,900) on consecutive days. This indicates intent to evade CTR filing requirements."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "MANUAL_REVIEW_REQUIRED"
+    ],
+    "narrative_word_count": 17,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "12d3f35a-fc09-4605-9751-b937455c9585",
+    "processing_date": "2026-02-10T18:23:28.397435",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_20260210_3e8dccb2",
+    "filing_date": "2026-02-10T18:34:09.845366",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved",
+    "audit_trail": {
+      "approval_log_id": "40957282-5a47-4eea-99ba-3f0fca4d8f48",
+      "reviewer_id": "human_reviewer_01",
+      "risk_rating": "High"
+    }
+  },
+  "subject_information": {
+    "customer_name": "Elijah Patton",
+    "customer_id": "CUST_0071",
+    "address": "937 Derek Avenue Suite 596, Scottchester, GU 85833",
+    "customer_since": "2018-07-08",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.98,
+    "narrative": "Hybrid Test: Customer data from CSV indicates structuring...",
+    "key_indicators": [
+      "Round amounts",
+      "High velocity"
+    ],
+    "ai_reasoning": "Hybrid Test: Real Data was analyzed and flagged."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "31 CFR 1020.320"
+    ],
+    "narrative_word_count": 8,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "3e8dccb2-51da-4e58-b92d-2bd2fd1995c3",
+    "processing_date": "2026-02-10T18:34:09.845366",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

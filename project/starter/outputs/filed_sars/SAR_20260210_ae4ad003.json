@@ -1,0 +1,48 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_20260210_ae4ad003",
+    "filing_date": "2026-02-10T18:34:09.813775",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved",
+    "audit_trail": {
+      "approval_log_id": "4ba538d2-c044-45b9-bb3a-efaf50718e60",
+      "reviewer_id": "human_reviewer_01",
+      "risk_rating": "High"
+    }
+  },
+  "subject_information": {
+    "customer_name": "Melissa Miller",
+    "customer_id": "CUST_0069",
+    "address": "15999 Novak Islands Apt. 477, West Angela, MS 57104",
+    "customer_since": "2019-01-02",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.98,
+    "narrative": "Hybrid Test: Customer data from CSV indicates structuring...",
+    "key_indicators": [
+      "Round amounts",
+      "High velocity"
+    ],
+    "ai_reasoning": "Hybrid Test: Real Data was analyzed and flagged."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "31 CFR 1020.320"
+    ],
+    "narrative_word_count": 8,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "ae4ad003-6d7c-41f1-9bd0-36af34216a7a",
+    "processing_date": "2026-02-10T18:34:09.813775",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

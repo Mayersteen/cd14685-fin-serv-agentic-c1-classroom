@@ -1,0 +1,49 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_20260210_522ed6cc",
+    "filing_date": "2026-02-10T18:33:01.990175",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved",
+    "audit_trail": {
+      "approval_log_id": "83b38bce-3d1a-43aa-967c-7d43e0c14c88",
+      "reviewer_id": "human_reviewer_01",
+      "risk_rating": "High"
+    }
+  },
+  "subject_information": {
+    "customer_name": "Tracy Lewis",
+    "customer_id": "CUST_0053",
+    "address": "8016 Nicole Stream Suite 650, Williamsside, ID 48017",
+    "customer_since": "2024-05-11",
+    "risk_rating": "Medium"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.92,
+    "narrative": "System Error: Unable to generate SAR narrative for Customer Tracy Lewis. Manual Compliance Officer review is required.",
+    "key_indicators": [
+      "Amounts just below threshold",
+      "High frequency",
+      "Cash deposits"
+    ],
+    "ai_reasoning": "Detected pattern of cash deposits just below $10,000 threshold ($9,800, $9,900) on consecutive days. This indicates intent to evade CTR filing requirements."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "MANUAL_REVIEW_REQUIRED"
+    ],
+    "narrative_word_count": 17,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "522ed6cc-7d4c-4567-a61c-02086bf8c164",
+    "processing_date": "2026-02-10T18:33:01.990175",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}

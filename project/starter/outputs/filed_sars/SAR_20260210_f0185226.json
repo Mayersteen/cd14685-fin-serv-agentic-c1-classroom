@@ -1,0 +1,49 @@
+{
+  "sar_metadata": {
+    "sar_id": "SAR_20260210_f0185226",
+    "filing_date": "2026-02-10T18:32:51.450812",
+    "filing_type": "Suspicious Activity Report",
+    "ai_generated": true,
+    "review_status": "human_approved",
+    "audit_trail": {
+      "approval_log_id": "e5ada51c-6d43-44f9-ae76-d9be27794a2e",
+      "reviewer_id": "human_reviewer_01",
+      "risk_rating": "High"
+    }
+  },
+  "subject_information": {
+    "customer_name": "Cindy Clayton",
+    "customer_id": "CUST_0057",
+    "address": "08330 Robert Stravenue, Garciaberg, AL 72636",
+    "customer_since": "2020-05-26",
+    "risk_rating": "High"
+  },
+  "suspicious_activity": {
+    "classification": "Structuring",
+    "risk_level": "High",
+    "confidence_score": 0.92,
+    "narrative": "System Error: Unable to generate SAR narrative for Customer Cindy Clayton. Manual Compliance Officer review is required.",
+    "key_indicators": [
+      "Amounts just below threshold",
+      "High frequency",
+      "Cash deposits"
+    ],
+    "ai_reasoning": "Detected pattern of cash deposits just below $10,000 threshold ($9,800, $9,900) on consecutive days. This indicates intent to evade CTR filing requirements."
+  },
+  "regulatory_compliance": {
+    "citations": [
+      "MANUAL_REVIEW_REQUIRED"
+    ],
+    "narrative_word_count": 17,
+    "compliance_status": "approved"
+  },
+  "audit_trail": {
+    "case_id": "f0185226-d154-488a-834c-717d485ecf5c",
+    "processing_date": "2026-02-10T18:32:51.450812",
+    "ai_agents_used": [
+      "RiskAnalyst",
+      "ComplianceOfficer"
+    ],
+    "human_reviewer": "compliance_officer"
+  }
+}
