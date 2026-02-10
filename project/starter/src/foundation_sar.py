@@ -181,6 +181,20 @@ class TransactionData(BaseModel):
     counterparty: Optional[str] = Field(None, description="Counter party in transaction")
     location: Optional[str] = Field(None, description="Transaction location or branch")
 
+    @model_validator(mode='before')
+    @classmethod
+    def convert_nan_to_none(clscls, data: Any) -> Any:
+        # Pre-validator to automatically convert pandas/numpy NaNs to None before
+        # Pydantic validation occurs.
+
+        if isinstance(data, dict):
+            for k,v in data.items():
+                # Check if falue is float and is nan
+                if isinstance(v, float) and math.isnan(v):
+                    data[k] = None
+
+        return data
+
     @field_validator('transaction_date')
     @classmethod
     def validate_past_date(cls, v: str) -> str:
